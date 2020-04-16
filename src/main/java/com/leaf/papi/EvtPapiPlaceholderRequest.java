@@ -8,8 +8,6 @@ import ch.njol.skript.log.ErrorQuality;
 import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
 import com.leaf.Leaf;
-import com.leaf.papi.PlaceholderAPIEvent;
-import com.leaf.papi.PlaceholderAPIListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 

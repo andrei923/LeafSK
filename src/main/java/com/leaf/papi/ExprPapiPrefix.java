@@ -8,7 +8,6 @@ import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
-import com.leaf.papi.PlaceholderAPIEvent;
 import org.bukkit.event.Event;
 
 

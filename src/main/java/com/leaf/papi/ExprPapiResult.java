@@ -10,7 +10,6 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-import com.leaf.papi.PlaceholderAPIEvent;
 import org.bukkit.event.Event;
 
 

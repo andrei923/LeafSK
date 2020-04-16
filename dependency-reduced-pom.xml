@@ -62,16 +62,16 @@
       <url>https://jitpack.io</url>
     </repository>
     <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/groups/public/</url>
+    </repository>
+    <repository>
       <id>md5</id>
       <url>http://repo.md-5.net/content/groups/public</url>
     </repository>
     <repository>
       <id>placeholderapi</id>
       <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-    </repository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/groups/public/</url>
     </repository>
   </repositories>
   <dependencies>
