@@ -1,7 +1,7 @@
 name: LeafSK
 description: A Skript Addon which has some usefull stuff from other addons.
 main: com.leaf.Leaf
-version: 2.0.9
+version: 2.1.0
 api-version: 1.13
 author: Andrei923
 depend: [Skript]

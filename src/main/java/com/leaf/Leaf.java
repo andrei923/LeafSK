@@ -9,7 +9,6 @@ import javax.sql.rowset.RowSetProvider;
 import ch.njol.skript.Skript;
 import org.bukkit.ChatColor;
 import ch.njol.skript.SkriptAddon;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.leaf.gui.GUIManager;
@@ -18,7 +17,6 @@ import com.leaf.misc.ActionBarAPI;
 import com.leaf.misc.ActionBarNew;
 import com.leaf.misc.ActionBarOld;
 import com.leaf.misc.Title;
-import com.leaf.util.ReflectionUtils;
 import com.leaf.yaml.api.ConstructedClass;
 import com.leaf.yaml.api.RepresentedClass;
 import com.leaf.yaml.utils.SkriptYamlUtils;
@@ -30,14 +28,14 @@ public class Leaf extends JavaPlugin {
 	public static Leaf plugin;
 	private static GUIManager gui;
 	private Title title;
+	private ActionBarAPI actionbar;	
+	private int serverVersion;	
 	private static RowSetFactory rowSetFactory;
 	public final static Logger LOGGER = Bukkit.getServer() != null ? Bukkit.getLogger() : Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	public final static HashMap<String, YAMLProcessor> YAML_STORE = new HashMap<String, YAMLProcessor>();
-	private int serverVersion;
 	private final static HashMap<String, String> REGISTERED_TAGS = new HashMap<String, String>();
 	private static SkriptYamlRepresenter representer;
 	private static SkriptYamlConstructor constructor;
-	private ActionBarAPI actionbar;
 	public static boolean isTagRegistered(String tag) {
 		return REGISTERED_TAGS.containsKey(tag);
 	}
@@ -92,7 +90,7 @@ public class Leaf extends JavaPlugin {
 		}
 		representer = new SkriptYamlRepresenter();
 		constructor = new SkriptYamlConstructor();
-		Boolean hasSkript = hasPlugin("Skript");
+		Boolean hasSkript = plugin.getServer().getPluginManager().isPluginEnabled("Skript");
 		if (!hasSkript || !Skript.isAcceptRegistrations()) {
 			if (!hasSkript)
 				log("Error 404 - Skript not found.", Level.SEVERE);
@@ -131,14 +129,6 @@ public class Leaf extends JavaPlugin {
 	public static Leaf getInstance(){
 		return plugin;
 	}
-	public boolean hasPlugin(String str) {
-		return plugin.getServer().getPluginManager().isPluginEnabled(str);
-	}
-
-	public void info(String msg, Object... values) {
-		log(String.format(msg, values), Level.INFO);
-	}
-	
 	public static GUIManager getGUIManager(){
 		if (gui == null)
 			 gui = new GUIManager(getInstance());
@@ -156,13 +146,6 @@ public class Leaf extends JavaPlugin {
 	public static void log(String msg, Level lvl){
 	    plugin.getLogger().log(lvl, msg);
 	}
-	public static void log(Level lvl, String... msgs){
-		for (String msg : msgs)
-			log(msg, lvl);
-	}
-	public static boolean isSpigot(){
-		return ReflectionUtils.hasMethod(Player.class, "spigot");
-	}
 	public static RowSetFactory getRowSetFactory() {
 	    return rowSetFactory;
 	}
@@ -172,19 +155,15 @@ public class Leaf extends JavaPlugin {
 	public SkriptYamlRepresenter getRepresenter() {
 		return representer;
 	}
-
 	public SkriptYamlConstructor getConstructor() {
 		return constructor;
 	}
-
 	public int getServerVersion() {
 		return serverVersion;
 	}
-
 	public static void warn(String error) {
 		LOGGER.warning("[LeafSK] " + error);
 	}
-
 	public static void error(String error) {
 		LOGGER.severe("[LeafSK] " + error);
 	}	

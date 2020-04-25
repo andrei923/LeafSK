@@ -68,8 +68,7 @@ public class Collect {
         return builder.toString().substring(0, builder.length() - 1);
     }
 
-    @SuppressWarnings("resource")
-	public static String textPart(InputStream is) {
+    public static String textPart(InputStream is) {
         if (is == null) return "";
         try (Scanner s = new Scanner(is).useDelimiter("\\A")) {
             return s.hasNext() ? s.next() : "";

@@ -36,64 +36,56 @@ public class RegionUtils {
 		  region.setFlag(wrapper.getFlag("greeting", String.class).orElse(null), name);
 	  }	
 	  public static void setEnterMessage(Object region, String name) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  regionOne.setFlag(wrapper.getFlag("greeting", String.class).orElse(null), name);
+		  setEnterMessage((IWrappedRegion) region, name);
 	  }	
 	  //
 	  public static void setLeaveMessage(IWrappedRegion region, String name) {
 		  region.setFlag(wrapper.getFlag("farewell", String.class).orElse(null), name);
 	  }		
 	  public static void setLeaveMessage(Object region, String name) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  regionOne.setFlag(wrapper.getFlag("farewell", String.class).orElse(null), name);
+		  setLeaveMessage((IWrappedRegion) region, name);
 	  }	
 	  //
 	  public static void setFlag(IWrappedRegion region, String flag, WrappedState value) {
 	       region.setFlag(wrapper.getFlag(flag, WrappedState.class).orElse(null), value);
 	  }	 
 	  public static void setFlag(Object region, String flag, WrappedState value) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  regionOne.setFlag(wrapper.getFlag(flag, WrappedState.class).orElse(null), value);
+		  setFlag((IWrappedRegion) region, flag, value);
 	  }
 	  //
 	  public static void addOwner(IWrappedRegion region, Player p) {
 		  region.getOwners().addPlayer(p.getUniqueId());
 	  }	  
 	  public static void addOwner(Object region, Player p) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  regionOne.getOwners().addPlayer(p.getUniqueId());
+		  addOwner((IWrappedRegion) region, p);
 	  }	 	  
 	  //
 	  public static void addMember(IWrappedRegion region, Player p) {
 		  region.getMembers().addPlayer(p.getUniqueId());
 	  }	  	  
 	  public static void addMember(Object region, Player p) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  regionOne.getMembers().addPlayer(p.getUniqueId());
+		  addMember((IWrappedRegion) region, p);
 	  }
 	  //
 	  public static boolean isMember(IWrappedRegion region, Player p) {
 		  return (region.getMembers().getPlayers().contains(p.getUniqueId()));
 	  }	 
 	  public static boolean isMember(Object region, Player p) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  return (regionOne.getMembers().getPlayers().contains(p.getUniqueId()));
+		  return isMember((IWrappedRegion) region, p);
 	  }	  
 	  //
 	  public static void removeMember(IWrappedRegion region, Player p) {
 		  region.getMembers().removePlayer(p.getUniqueId());
 	  }	
 	  public static void removeMember(Object region, Player p) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;		  
-		  regionOne.getMembers().removePlayer(p.getUniqueId());
+		  removeMember((IWrappedRegion) region, p);
 	  }	
 	  //
 	  public static boolean isOwner(IWrappedRegion region, Player p) {
 		  return (region.getOwners().getPlayers().contains(p.getUniqueId()));
 	  }	
-	  public static boolean isOwner(Object region, Player p) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;			  
-		  return (regionOne.getOwners().getPlayers().contains(p.getUniqueId()));
+	  public static boolean isOwner(Object region, Player p) {	  
+		  return isOwner((IWrappedRegion) region, p);
 	  }		  
 	  //
 	  public static boolean checkOverlap(Location loc1, Location loc2) {
@@ -104,8 +96,7 @@ public class RegionUtils {
 		  return region.getMembers().getPlayers();
 	  }	  
 	  public static Set<UUID> getMembers(Object region) {
-		  IWrappedRegion regionOne = (IWrappedRegion) region;
-		  return regionOne.getMembers().getPlayers();
+		  return getMembers((IWrappedRegion) region);
 	  }	  
 	  //
 	  public static IWrappedRegion getRegionAt(Location loc) {
