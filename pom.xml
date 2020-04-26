@@ -84,7 +84,7 @@
 <dependency>
     <groupId>net.jitse</groupId>
     <artifactId>npclib-plugin</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7.1-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>   
 <dependency>
@@ -131,6 +131,10 @@
 </dependency>
 </dependencies>  
 <repositories>  
+<repository>
+   <id>tomcat</id>
+   <url>https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc</url>
+</repository> 
 <repository>
    <id>elMakers</id>
    <url>http://maven.elmakers.com/repository/</url>

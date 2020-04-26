@@ -46,6 +46,10 @@
   </build>
   <repositories>
     <repository>
+      <id>tomcat</id>
+      <url>https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc</url>
+    </repository>
+    <repository>
       <id>elMakers</id>
       <url>http://maven.elmakers.com/repository/</url>
     </repository>

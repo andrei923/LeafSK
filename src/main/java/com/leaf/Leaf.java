@@ -1,6 +1,8 @@
 package com.leaf;
 
 import org.bukkit.Bukkit;
+
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,12 +13,15 @@ import org.bukkit.ChatColor;
 import ch.njol.skript.SkriptAddon;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.leaf.gui.GUIManager;
 import com.leaf.gui.SkriptGUIEvent;
 import com.leaf.misc.ActionBarAPI;
 import com.leaf.misc.ActionBarNew;
 import com.leaf.misc.ActionBarOld;
 import com.leaf.misc.Title;
+import com.leaf.skriptmirror.LibraryLoader;
+import com.leaf.skriptmirror.ParseOrderWorkarounds;
 import com.leaf.yaml.api.ConstructedClass;
 import com.leaf.yaml.api.RepresentedClass;
 import com.leaf.yaml.utils.SkriptYamlUtils;
@@ -29,7 +34,7 @@ public class Leaf extends JavaPlugin {
 	private static GUIManager gui;
 	private Title title;
 	private ActionBarAPI actionbar;	
-	private int serverVersion;	
+	private int serverVersion;			
 	private static RowSetFactory rowSetFactory;
 	public final static Logger LOGGER = Bukkit.getServer() != null ? Bukkit.getLogger() : Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	public final static HashMap<String, YAMLProcessor> YAML_STORE = new HashMap<String, YAMLProcessor>();
@@ -112,8 +117,15 @@ public class Leaf extends JavaPlugin {
 			rowSetFactory = RowSetProvider.newFactory();
 			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");	
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-				leaf.loadClasses(getClass().getPackage().getName(), "papi");
-			}			
+				leaf.loadClasses(getClass().getPackage().getName(), "papi");	
+			}	
+			//SkriptMirror.
+			leaf.loadClasses("com.leaf.skriptmirror");	
+		    Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
+		    LibraryLoader.loadLibraries(dataFolder);
+		    ParseOrderWorkarounds.reorderSyntax();		
+		    leaf.setLanguageFileDirectory("lang");
+			//			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}}
@@ -167,4 +179,5 @@ public class Leaf extends JavaPlugin {
 	public static void error(String error) {
 		LOGGER.severe("[LeafSK] " + error);
 	}	
+	  
 }
