@@ -64,7 +64,7 @@ public class ExprDataSource extends SimpleExpression<HikariDataSource> {
     }
 
     connectionCache.put(jdbcUrl, ds);
-
+    ds.setConnectionTestQuery("SELECT 1");
     return new HikariDataSource[]{ds};
   }
 

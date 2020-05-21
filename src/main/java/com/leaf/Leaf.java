@@ -104,7 +104,7 @@ public class Leaf extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-		SkriptAddon leaf = Skript.registerAddon(this);
+		SkriptAddon leaf = Skript.registerAddon(this).setLanguageFileDirectory("lang");
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		version = Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
 		if (version.equals("v1_8_R3")) {
@@ -123,9 +123,8 @@ public class Leaf extends JavaPlugin {
 			leaf.loadClasses("com.leaf.skriptmirror");	
 		    Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
 		    LibraryLoader.loadLibraries(dataFolder);
-		    ParseOrderWorkarounds.reorderSyntax();		
-		    leaf.setLanguageFileDirectory("lang");
-			//			
+		    ParseOrderWorkarounds.reorderSyntax();		    
+			//		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}}

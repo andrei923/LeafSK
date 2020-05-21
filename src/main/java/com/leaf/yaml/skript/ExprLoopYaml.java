@@ -149,15 +149,14 @@ public class ExprLoopYaml extends SimpleExpression<Object> {
 	public boolean isSingle() {
 		return false;
 	}
-
+	
+	/*
 	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
 	protected <R> ConvertedExpression<Object, ? extends R> getConvertedExpr(final Class<R>... to) {
 		if (isYamlLoop && loopState != LoopState.INDEX) {
 			return new ConvertedExpression<>(this, (Class<R>) Utils.getSuperType(to), new Converter<Object, R>() {
-				@Override
-				@Nullable
 				public R convert(final Object o) {
 					return Converters.convert(o, to);
 				}
@@ -166,6 +165,7 @@ public class ExprLoopYaml extends SimpleExpression<Object> {
 			return super.getConvertedExpr(to);
 		}
 	}
+	 */
 
 	@Override
 	public Class<? extends Object> getReturnType() {

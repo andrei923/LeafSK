@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -235,7 +235,7 @@ public class SkriptYamlConstructor extends SafeConstructor {
 		public Object construct(Node node) {
 			ScalarNode scalar = (ScalarNode) node;
 			String nodeValue = scalar.getValue();
-			return Color.byName(nodeValue);
+			return ChatColor.valueOf(nodeValue);
 		}
 	}
 
