@@ -1,9 +1,12 @@
 package com.leaf.db;
 
 import com.zaxxer.hikari.HikariDataSource;
+
 import org.bukkit.event.Event;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
@@ -62,9 +65,9 @@ public class ExprDataSource extends SimpleExpression<HikariDataSource> {
         ds.setMaxLifetime(l.getMilliSeconds());
       }
     }
-
-    connectionCache.put(jdbcUrl, ds);
     ds.setConnectionTestQuery("SELECT 1");
+    connectionCache.put(jdbcUrl, ds);
+
     return new HikariDataSource[]{ds};
   }
 

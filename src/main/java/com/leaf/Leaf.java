@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
+
 import ch.njol.skript.Skript;
 import org.bukkit.ChatColor;
 import ch.njol.skript.SkriptAddon;
@@ -15,11 +16,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.leaf.gui.GUIManager;
-import com.leaf.gui.SkriptGUIEvent;
 import com.leaf.misc.ActionBarAPI;
 import com.leaf.misc.ActionBarNew;
 import com.leaf.misc.ActionBarOld;
-import com.leaf.misc.Title;
 import com.leaf.skriptmirror.LibraryLoader;
 import com.leaf.skriptmirror.ParseOrderWorkarounds;
 import com.leaf.yaml.api.ConstructedClass;
@@ -31,8 +30,7 @@ import com.leaf.yaml.utils.yaml.YAMLProcessor;
 
 public class Leaf extends JavaPlugin {
 	public static Leaf plugin;
-	private static GUIManager gui;
-	private Title title;
+	private static GUIManager gui;	
 	private ActionBarAPI actionbar;	
 	private int serverVersion;			
 	private static RowSetFactory rowSetFactory;
@@ -86,13 +84,10 @@ public class Leaf extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		String version;
-		String initServerVer = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-		serverVersion = Integer.parseInt(Character.toString(initServerVer.charAt(3)));
-		if (serverVersion == 1 && Integer.parseInt(Character.toString(initServerVer.charAt(4))) >= 0) {
-			serverVersion = Integer.parseInt(Integer.parseInt(Character.toString(initServerVer.charAt(3))) + ""
-					+ Integer.parseInt(Character.toString(initServerVer.charAt(4))));
-		}
+        String[] strings = Bukkit.getBukkitVersion().split("-");
+        String[] version = strings[0].split("\\.");
+        serverVersion = Integer.parseInt(version[1]);
+        
 		representer = new SkriptYamlRepresenter();
 		constructor = new SkriptYamlConstructor();
 		Boolean hasSkript = plugin.getServer().getPluginManager().isPluginEnabled("Skript");
@@ -106,13 +101,11 @@ public class Leaf extends JavaPlugin {
 		}
 		SkriptAddon leaf = Skript.registerAddon(this).setLanguageFileDirectory("lang");
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-		version = Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
-		if (version.equals("v1_8_R3")) {
+		if (serverVersion <= 18) {
     		actionbar = new ActionBarOld();
 		} else {
     		actionbar = new ActionBarNew();
     	}
-		title = new Title();
 		try {
 			rowSetFactory = RowSetProvider.newFactory();
 			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");	
@@ -124,30 +117,19 @@ public class Leaf extends JavaPlugin {
 		    Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
 		    LibraryLoader.loadLibraries(dataFolder);
 		    ParseOrderWorkarounds.reorderSyntax();		    
-			//		
+			//			    
 		} catch (Exception e) {
 			e.printStackTrace();
 		}}
 
 	@Override
 	public void onDisable() {
-		SkriptGUIEvent.getInstance().unregisterAll();
-		if (gui != null)
-			gui.clearAll();
 		HandlerList.unregisterAll(this);
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	public static Leaf getInstance(){
 		return plugin;
 	}
-	public static GUIManager getGUIManager(){
-		if (gui == null)
-			 gui = new GUIManager(getInstance());
-	    return gui;
-	}
-    public Title getTitle() {
-        return title;
-    }	
     public ActionBarAPI getActionbar() {
         return actionbar;
     }
@@ -177,6 +159,11 @@ public class Leaf extends JavaPlugin {
 	}
 	public static void error(String error) {
 		LOGGER.severe("[LeafSK] " + error);
+	}	
+	public static GUIManager getGUIManager(){
+		if (gui == null)
+			 gui = new GUIManager(getInstance());
+	    return gui;
 	}	
 	  
 }

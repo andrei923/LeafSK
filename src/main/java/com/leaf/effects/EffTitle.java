@@ -1,6 +1,6 @@
 package com.leaf.effects;
 
-import com.leaf.Leaf;
+import com.leaf.misc.Title;
 import com.leaf.util.Registry;
 import java.lang.reflect.InvocationTargetException;
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class EffTitle extends Effect {
 		// TODO Auto-generated method stub
         try {
         	for(Player p : player.getAll(arg0)){
-        		Leaf.getInstance().getTitle().sendTitle(p, title.getSingle(arg0), subtitle.getSingle(arg0), fadein.getSingle(arg0), fadeout.getSingle(arg0), time.getSingle(arg0));
+        		Title.sendTitle(p, title.getSingle(arg0), subtitle.getSingle(arg0), fadein.getSingle(arg0), fadeout.getSingle(arg0), time.getSingle(arg0));
         	}
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 				| IllegalAccessException | IllegalArgumentException | InvocationTargetException

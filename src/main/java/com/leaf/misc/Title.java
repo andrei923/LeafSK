@@ -11,7 +11,7 @@ public class Title {
 	
 	ReflectionUtils reflection = new ReflectionUtils();
 	
-    public void sendTitle(Player player, String title, String subtitle, int fadein, int fadeout, int duration) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+    public static void sendTitle(Player player, String title, String subtitle, int fadein, int fadeout, int duration) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
         Class<?> PacketPlayOutTitle = ReflectionUtils.getNMSClass("PacketPlayOutTitle");
         Class<?> IChatBaseComponent = ReflectionUtils.getNMSClass("IChatBaseComponent");
         Class<?> ChatSerializer = ReflectionUtils.getNMSClass("IChatBaseComponent$ChatSerializer");
