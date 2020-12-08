@@ -146,7 +146,7 @@ public class ExprYaml<T> extends SimpleExpressionFork<T> {
 		final String name = this.file.getSingle(event);
 		//final String path = this.node.getSingle(event);
 		if (!Leaf.YAML_STORE.containsKey(name)) {
-			Leaf.warn("No yaml by the name '" + name + "' has been loaded");
+			Leaf.warn("No yaml by the name '" + name + "' has been loaded" + "->" + event.getEventName() + " Value " + path);
 			return null;
 		}
 
@@ -238,7 +238,7 @@ public class ExprYaml<T> extends SimpleExpressionFork<T> {
 		final String path = this.node.getSingle(event);
 
 		if (!Leaf.YAML_STORE.containsKey(name)) {
-			Leaf.warn("No yaml by the name '" + name + "' has been loaded");
+			Leaf.warn("No yaml by the name '" + name + "' has been loaded" + "->" + event.getEventName() + " Value " + path);
 			return;
 		}
 

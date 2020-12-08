@@ -131,13 +131,8 @@ public class GUIManager {
 					e.setCancelled(true);
 					final GUI gui = getGUI(inv, e.getSlot(), e.getClick());
 					if (gui != null && e.getInventory().getItem(e.getSlot()) != null && gui.runOnlyWith(e.getCursor())){
-						if (gui.toCallEvent()){
-							GUIActionEvent guie = new GUIActionEvent(e);
-							Bukkit.getPluginManager().callEvent(guie);
-							e.setCancelled(!guie.isCancelled());
-						} else if(gui.toClose())
+						if(gui.toClose())
 							Bukkit.getScheduler().scheduleSyncDelayedTask(tuske, () -> {
-								//gm.removeAll(click);
 								if (gui.getInventory() != null)
 									e.getWhoClicked().openInventory(gui.getInventory());
 								else

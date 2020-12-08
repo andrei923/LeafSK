@@ -1,21 +1,18 @@
 package com.leaf.gui;
 
-import ch.njol.skript.SkriptEventHandler;
-import ch.njol.skript.lang.Literal;
-import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
-import ch.njol.skript.lang.SkriptParser;
-import ch.njol.skript.lang.Trigger;
-
-import org.bukkit.event.Event;
-
-import com.leaf.util.ReflectionUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 
+import org.bukkit.event.Event;
+
+import ch.njol.skript.SkriptEventHandler;
+import ch.njol.skript.lang.Literal;
+import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.Trigger;
+
 /**
  * This is called only when someone uses /sk reload all, so it will register {@link SkriptGUIEvent} again.
- * @author Tuke_Nuke on 03/09/2017
  */
 public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 
@@ -25,10 +22,11 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	}
 
 	public void register() {
-		if (t == null) //A file object, just to not use null
-			t = new Trigger(new File("TuSKe"), getClass().getName(), this, new ArrayList<>());
-		//Some old skript version doesn't have this method public
-		ReflectionUtils.invokeMethod(SkriptEventHandler.class, null, "addSelfRegisteringTrigger", t);
+
+		if (t == null) // A file object, just to not use null
+			t = new Trigger(new File("SkriptGUI"), getClass().getName(), this, new ArrayList<>());
+
+		SkriptEventHandler.addSelfRegisteringTrigger(t);
 	}
 
 	@Override
@@ -47,7 +45,7 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	}
 
 	@Override
-	public boolean init(Literal<?>[] args, int matchedPattern, SkriptParser.ParseResult parseResult) {
+	public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult) {
 		return true;
 	}
 
@@ -55,4 +53,5 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	public String toString(Event e, boolean debug) {
 		return getClass().getName();
 	}
+
 }

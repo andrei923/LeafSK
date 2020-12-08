@@ -1,13 +1,12 @@
 package com.leaf.effects;
 
+import javax.annotation.Nullable;
 import ch.njol.skript.Skript;
 import ch.njol.skript.registrations.Classes;
-
 import com.leaf.Leaf;
 import com.leaf.gui.GUI;
 import com.leaf.gui.SkriptGUIEvent;
 import com.leaf.util.*;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -16,9 +15,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import javax.annotation.Nullable;
-
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.function.Function;
@@ -30,7 +26,7 @@ import java.util.function.Consumer;
 public class EffFormatGUI extends EffectSection {
 	static {
 		String cr = "string/" + Classes.getExactClassInfo(ClickType.class).getCodeName();
-		Registry.newEffect(EffFormatGUI.class,
+		Skript.registerCondition(EffFormatGUI.class,
 				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% [to [do] nothing]",
 				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to close [(using|with) %-" + cr + "% [(button|click|action)]]",
 				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (run|exe[cute]) [(using|with) %-" + cr + "% [(button|click|action)]]",
@@ -127,7 +123,7 @@ public class EffFormatGUI extends EffectSection {
 							case 3:
 								final CommandSender s = sender != null ? sender.getSingle(e) : p[y];
 								final String c = cmd.getSingle(e);
-								rn = (Runnable) () -> CommandUtils.runCommand(s, c);
+								Skript.dispatchCommand(s, c);
 								break;
 							case 4:
 								final EvalFunction f = func.getParemetersValues(e);

@@ -1,13 +1,11 @@
 package com.leaf.effects;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
-
-import com.leaf.util.Registry;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
@@ -17,8 +15,9 @@ import java.util.regex.Matcher;
 
 public class EffDownload extends Effect {
 	static {
-		Registry.newEffect(EffDownload.class, "download [from] %string% to [file] %string%");
+		Skript.registerEffect(EffDownload.class, "download [from] %string% to [file] %string%");
 	}
+	
     private Expression<String> url;
     private Expression<String> file;
 

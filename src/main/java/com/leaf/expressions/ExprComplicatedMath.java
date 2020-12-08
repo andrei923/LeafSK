@@ -1,26 +1,30 @@
 package com.leaf.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 import org.bukkit.event.Event;
 
-import com.leaf.util.Collect;
-import com.leaf.util.Registry;
+
 import java.math.BigInteger;
 
 
 public class ExprComplicatedMath extends SimpleExpression<Number> {
 
 	static {
-		Registry.newSimple(ExprComplicatedMath.class, "sin[e] %number%", "cos[ine] %number%", "tan[gent] %number%", "arc sin[e] %number%", "arc cos[ine] %number%", "arc tan[gent] %number%", "hyperbolic sin[e] %number%", "hyperbolic cos[ine] %number%", "hyperbolic tan[gent] %number%", "[natural ]log[arithm] %number%", "base(-| )10 log[arithm] %number%", "signum %number%", "(sqrt|square root)[ of] %number%", "(%number% factorial|%number%!)");
-	}
-	
+		Skript.registerExpression(ExprComplicatedMath.class, Number.class, ExpressionType.SIMPLE, "sin[e] %number%", "cos[ine] %number%", "tan[gent] %number%", "arc sin[e] %number%", "arc cos[ine] %number%", "arc tan[gent] %number%", "hyperbolic sin[e] %number%", "hyperbolic cos[ine] %number%", "hyperbolic tan[gent] %number%", "[natural ]log[arithm] %number%", "base(-| )10 log[arithm] %number%", "signum %number%", "(sqrt|square root)[ of] %number%", "(%number% factorial|%number%!)");
+	}		
+
+    public static <T> T[] asArray(@SuppressWarnings("unchecked") T... objects) {
+        return objects;
+    }	
     private Expression<Number> arg;
     private int math;
-
+     
     @Override
     protected Number[] get(Event event) {
         Number n = arg.getSingle(event);
@@ -70,7 +74,7 @@ public class ExprComplicatedMath extends SimpleExpression<Number> {
                 endResult = factorial(n.intValue()).doubleValue();
                 break;
         }
-        return Collect.asArray(endResult);
+        return ExprComplicatedMath.asArray(endResult);
     }
 
     @Override

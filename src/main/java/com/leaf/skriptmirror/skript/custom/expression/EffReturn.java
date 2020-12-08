@@ -6,12 +6,14 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.TriggerItem;
+import ch.njol.skript.lang.function.FunctionEvent;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
 
-import org.bukkit.event.Event;
-
+import com.leaf.skriptmirror.skript.reflect.sections.SectionEvent;
 import com.leaf.skriptmirror.util.SkriptUtil;
+
+import org.bukkit.event.Event;
 
 public class EffReturn extends Effect {
   static {
@@ -27,11 +29,12 @@ public class EffReturn extends Effect {
 
   @Override
   protected TriggerItem walk(Event e) {
-    if (objects != null) {
-      ((ExpressionGetEvent) e).setOutput(objects.getAll(e));
-    } else {
-      ((ExpressionGetEvent) e).setOutput(new Object[0]);
+    if (e instanceof SectionEvent) {
+      ((SectionEvent) e).setOutput(objects == null ? new Object[0] : objects.getAll(e));
+      return null;
     }
+
+    ((ExpressionGetEvent) e).setOutput(objects == null ? new Object[0] : objects.getAll(e));
     return null;
   }
 
@@ -46,13 +49,19 @@ public class EffReturn extends Effect {
   @Override
   public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
                       SkriptParser.ParseResult parseResult) {
-    if (!ScriptLoader.isCurrentEvent(ExpressionGetEvent.class, ConstantGetEvent.class)) {
-      Skript.error("Return may only be used in custom expression getters.", ErrorQuality.SEMANTIC_ERROR);
+    if (!ScriptLoader.isCurrentEvent(ExpressionGetEvent.class, ConstantGetEvent.class, SectionEvent.class)) {
+      if (!isDelayed.isFalse() && ScriptLoader.isCurrentEvent(FunctionEvent.class)) {
+        Skript.error("Return may not be used if the code before it contains any delays.", ErrorQuality.SEMANTIC_ERROR);
+      } else {
+        Skript.error("Return may only be used in custom expression getters, computed options, " +
+          "sections and functions with return types.", ErrorQuality.SEMANTIC_ERROR);
+      }
       return false;
     }
 
-    if (!isDelayed.isTrue()) {
+    if (!isDelayed.isFalse()) {
       Skript.error("Return may not be used if the code before it contains any delays.", ErrorQuality.SEMANTIC_ERROR);
+      return false;
     }
 
     objects = SkriptUtil.defendExpression(exprs[0]);

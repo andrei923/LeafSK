@@ -16,6 +16,7 @@ import ch.njol.util.coll.iterator.ArrayIterator;
 
 import com.leaf.skriptmirror.skript.custom.condition.ConditionCheckEvent;
 import com.leaf.skriptmirror.skript.custom.effect.EffectTriggerEvent;
+import com.leaf.skriptmirror.skript.custom.event.EventTriggerEvent;
 import com.leaf.skriptmirror.skript.custom.expression.ExpressionChangeEvent;
 import com.leaf.skriptmirror.skript.custom.expression.ExpressionGetEvent;
 import com.leaf.skriptmirror.util.JavaUtil;
@@ -179,7 +180,8 @@ public class ExprExpression<T> implements Expression<T> {
         ExpressionGetEvent.class,
         ExpressionChangeEvent.class,
         ConditionCheckEvent.class,
-        SyntaxParseEvent.class
+        SyntaxParseEvent.class,
+        EventTriggerEvent.class
     )) {
       Skript.error("The expression 'expression' may only be used in a custom syntax.",
           ErrorQuality.SEMANTIC_ERROR);

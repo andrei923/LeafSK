@@ -1,13 +1,12 @@
 package com.leaf.skriptmirror;
 
-import ch.njol.skript.Skript;
+import javax.annotation.Nullable;
+
 import ch.njol.skript.lang.function.Function;
-import ch.njol.skript.lang.function.FunctionEvent;
 import ch.njol.skript.lang.function.Functions;
-import ch.njol.skript.lang.function.Parameter;
-import ch.njol.skript.registrations.Classes;
 
 public class FunctionWrapper {
+
   private final String name;
   private final Object[] arguments;
 
@@ -24,31 +23,10 @@ public class FunctionWrapper {
     return arguments;
   }
 
-  public Function getFunction() {
-    Function<?> function = Functions.getFunction(name);
-    if (function == null) {
-      Skript.warning(String.format("The function '%s' could not be resolved.", name));
-      return NoOpFunction.INSTANCE;
-    }
-    return function;
+  @Nullable
+  public Function<?> getFunction() {
+    return Functions.getFunction(name);
   }
 
-  private static class NoOpFunction extends Function<Object> {
-    private static NoOpFunction INSTANCE = new NoOpFunction();
-
-    private NoOpFunction() {
-      super("$noop", new Parameter[0], Classes.getExactClassInfo(Object.class), true);
-    }
-
-    @Override
-    public Object[] execute(FunctionEvent e, Object[][] params) {
-      return null;
-    }
-
-    @Override
-    public boolean resetReturnValue() {
-      return false;
-    }
-  }
 }
 

@@ -24,6 +24,8 @@ import com.leaf.skriptmirror.util.StringSimilarity;
 import org.bukkit.event.Event;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -41,7 +43,7 @@ public class ExprJavaCall<T> implements Expression<T> {
    * A regular expression that captures potential descriptors without actually validating the descriptor. This is done
    * both for performance reasons and to provide more helpful error messages when using a malformed descriptor.
    */
-  private static final String LITE_DESCRIPTOR = "[^.]+\\b";
+  private static final String LITE_DESCRIPTOR = "[^0-9.][^.]*\\b";
 
   static {
     //noinspection unchecked
@@ -63,7 +65,7 @@ public class ExprJavaCall<T> implements Expression<T> {
 
   static Throwable lastError;
 
-  private LRUCache<Descriptor, Collection<MethodHandle>> callSiteCache = new LRUCache<>(8);
+  private final LRUCache<Descriptor, Collection<MethodHandle>> callSiteCache = new LRUCache<>(8);
 
   private File script;
   private boolean suppressErrors;
@@ -116,14 +118,14 @@ public class ExprJavaCall<T> implements Expression<T> {
       if (rawArgs instanceof ExpressionList && rawArgs.getAnd()) {
         // In a 'comma/and' separated list, manually unwrap each expression and convert nulls to Null wrappers
         // This ensures that expressions that return null do not change the arity of the invoked method
-        arguments = Arrays.stream(((ExpressionList) rawArgs).getExpressions())
+        arguments = Arrays.stream(((ExpressionList<Object>) rawArgs).getExpressions())
             .map(SkriptUtil.unwrapWithEvent(e))
             .map(SkriptMirrorUtil::reifyIfNull)
             .toArray(Object[]::new);
       } else if (rawArgs.isSingle()) {
         // A special case of the above, since a single argument will not be wrapped in a list
         // Directly wrap the argument in an array to ensure the unary method is invoked
-        arguments = new Object[]{rawArgs.getSingle(e)};
+        arguments = new Object[]{SkriptMirrorUtil.reifyIfNull(rawArgs.getSingle(e))};
       } else {
         // If the user is using a non-single non-list expression, assume the number of arguments is correct
         arguments = rawArgs.getArray(e);
@@ -135,16 +137,15 @@ public class ExprJavaCall<T> implements Expression<T> {
     return invoke(target, arguments, getDescriptor(e));
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public T[] getArray(Event e) {
     T returnValue = getSingle(e);
 
     if (returnValue == null) {
-      return (T[]) Array.newInstance(superType, 0);
+      return JavaUtil.newArray(superType, 0);
     }
 
-    T[] arr = (T[]) Array.newInstance(superType, 1);
+    T[] arr = JavaUtil.newArray(superType, 1);
     arr[0] = returnValue;
 
     return arr;
@@ -254,6 +255,15 @@ public class ExprJavaCall<T> implements Expression<T> {
 
   @Override
   public String toString(Event e, boolean debug) {
+    switch (type) {
+      case FIELD:
+        return "" + rawTarget.toString(e, debug) + "." + staticDescriptor.getName();
+      case METHOD:
+        return "" + rawTarget.toString(e, debug) + "." + staticDescriptor.getName() + "(" +
+          (rawArgs == null ? "" : rawArgs.toString(e, debug)) + ")";
+      case CONSTRUCTOR:
+        return "new " + rawTarget.toString(e, debug) + "(" +  (rawArgs == null ? "" : rawArgs.toString(e, debug)) + ")";
+    }
     return null;
   }
 
@@ -261,6 +271,7 @@ public class ExprJavaCall<T> implements Expression<T> {
   @Override
   public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
                       SkriptParser.ParseResult parseResult) {
+
     script = SkriptUtil.getCurrentScript();
     suppressErrors = (parseResult.mark & 2) == 2;
 
@@ -328,7 +339,7 @@ public class ExprJavaCall<T> implements Expression<T> {
     return staticDescriptor == null;
   }
 
-  private Collection<MethodHandle> getCallSite(Descriptor e) {
+  private synchronized Collection<MethodHandle> getCallSite(Descriptor e) {
     return callSiteCache.computeIfAbsent(e, this::createCallSite);
   }
 
@@ -337,16 +348,36 @@ public class ExprJavaCall<T> implements Expression<T> {
 
     switch (type) {
       case FIELD:
-        return JavaUtil.fields(javaClass)
-            .filter(f -> f.getName().equals(e.getName()))
-            .peek(f -> f.setAccessible(true))
-            .flatMap(JavaUtil.propagateErrors(f -> Stream.of(
-                LOOKUP.unreflectGetter(f),
-                LOOKUP.unreflectSetter(f)
-            )))
-            .filter(Objects::nonNull)
-            .limit(2)
-            .collect(Collectors.toList());
+        ArrayList<MethodHandle> methodHandles = new ArrayList<>();
+
+        JavaUtil.fields(javaClass)
+          .filter(f -> f.getName().equals(e.getName()))
+          .peek(f -> f.setAccessible(true))
+          .forEach(field -> {
+            try {
+              methodHandles.add(LOOKUP.unreflectGetter(field));
+            } catch (IllegalAccessException ex) {
+              Skript.warning(
+                String.format("skript-reflect encountered a %s: %s%n" +
+                    "Run Skript with the verbosity 'very high' for the stack trace.",
+                  ex.getClass().getSimpleName(), ex.getMessage()));
+
+              if (Skript.logVeryHigh()) {
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                Skript.warning(errors.toString());
+              }
+            }
+
+            try {
+              methodHandles.add(LOOKUP.unreflectSetter(field));
+            } catch (IllegalAccessException ignored) { }
+          });
+
+        return methodHandles.stream()
+          .filter(Objects::nonNull)
+          .limit(2)
+          .collect(Collectors.toList());
       case METHOD:
         Stream<Method> methodStream = JavaUtil.methods(javaClass)
             .filter(m -> m.getName().equals(e.getName()));
@@ -391,7 +422,8 @@ public class ExprJavaCall<T> implements Expression<T> {
     // Copy arguments so that the original array isn't modified by type conversions
     // For instance methods, the target of the call must be added to the start of the arguments array
     Object[] argumentsCopy;
-    if (target instanceof JavaType) {
+    boolean isStatic = target instanceof JavaType;
+    if (isStatic) {
       argumentsCopy = createStaticArgumentsCopy(arguments);
     } else {
       argumentsCopy = createInstanceArgumentsCopy(target, arguments);
@@ -401,7 +433,7 @@ public class ExprJavaCall<T> implements Expression<T> {
 
     if (!method.isPresent()) {
       error(String.format("No matching %s: %s%s",
-          type, descriptor, argumentsMessage(arguments)));
+          type, descriptor.toString(isStatic), argumentsMessage(arguments)));
 
       suggestParameters(descriptor);
       suggestTypo(descriptor);
@@ -417,8 +449,8 @@ public class ExprJavaCall<T> implements Expression<T> {
       returnedValue = (T) mh.invokeWithArguments(argumentsCopy);
     } catch (Throwable throwable) {
       error(throwable, String.format("%s %s%s threw a %s: %s%n",
-          type, descriptor, argumentsMessage(arguments),
-          throwable.getClass().getSimpleName(), throwable.getMessage()));
+        type, descriptor, argumentsMessage(arguments),
+        throwable.getClass().getSimpleName(), throwable.getMessage()));
     }
 
     if (returnedValue == null) {
@@ -567,11 +599,7 @@ public class ExprJavaCall<T> implements Expression<T> {
     }
 
     // unwrap null wrapper
-    if (!to.isPrimitive() && o instanceof Null) {
-      return true;
-    }
-
-    return false;
+    return !to.isPrimitive() && o instanceof Null;
   }
 
   private static Object[] convertTypes(MethodHandle mh, Object[] args) {
@@ -638,7 +666,7 @@ public class ExprJavaCall<T> implements Expression<T> {
         if (args[i] instanceof JavaType) {
           args[i] = ((JavaType) args[i]).getJavaClass();
         } else if (args[i] instanceof ClassInfo) {
-          args[i] = ((ClassInfo) args[i]).getC();
+          args[i] = ((ClassInfo<?>) args[i]).getC();
         }
       }
 

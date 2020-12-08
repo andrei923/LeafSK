@@ -1,19 +1,23 @@
 package com.leaf.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
+import ch.njol.skript.lang.ExpressionType;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Scanner;
-import com.leaf.util.Registry;
+
 
 public class ExprURLText extends SimplePropertyExpression<String, String> {
 
 	static {
-		Registry.newSimple(ExprURLText.class, "text from [url] %string%");
+		Skript.registerExpression(ExprURLText.class, String.class, ExpressionType.SIMPLE, "text from [url] %string%");
 	}	
+	
     @Override
     protected String getPropertyName() {
-        return "URL";
+        return "text from [url] %string%";
     }
 
     @SuppressWarnings("resource")

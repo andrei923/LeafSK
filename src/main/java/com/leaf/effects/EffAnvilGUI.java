@@ -3,13 +3,12 @@ package com.leaf.effects;
 import com.leaf.Leaf;
 import com.leaf.events.AnvilGUICloseEvent;
 import com.leaf.events.AnvilGUICompleteEvent;
-import com.leaf.util.Registry;
 import javax.annotation.Nullable;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -19,9 +18,9 @@ import net.wesjd.anvilgui.AnvilGUI;
 public class EffAnvilGUI extends Effect {
 	
 	static {
-		Registry.newEffect(EffAnvilGUI.class, "[leaf] open anvil gui with %itemstack% and name %string% to %player%");
+		Skript.registerEffect(EffAnvilGUI.class, "[leaf] open anvil gui with %itemstack% and name %string% to %player%");
 	}
-	
+		
 	private Expression<Player> player;
 	private Expression<String> search;	
 	private Expression<ItemStack> item;

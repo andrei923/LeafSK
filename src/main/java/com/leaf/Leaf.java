@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
-
 import ch.njol.skript.Skript;
 import org.bukkit.ChatColor;
 import ch.njol.skript.SkriptAddon;
@@ -29,19 +28,18 @@ import com.leaf.yaml.utils.yaml.SkriptYamlRepresenter;
 import com.leaf.yaml.utils.yaml.YAMLProcessor;
 
 public class Leaf extends JavaPlugin {
-	public static Leaf plugin;
-	private static GUIManager gui;	
+	public static Leaf plugin;	
 	private ActionBarAPI actionbar;	
 	private int serverVersion;			
 	private static RowSetFactory rowSetFactory;
-	public final static Logger LOGGER = Bukkit.getServer() != null ? Bukkit.getLogger() : Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	public final static HashMap<String, YAMLProcessor> YAML_STORE = new HashMap<String, YAMLProcessor>();
-	private final static HashMap<String, String> REGISTERED_TAGS = new HashMap<String, String>();
 	private static SkriptYamlRepresenter representer;
 	private static SkriptYamlConstructor constructor;
-	public static boolean isTagRegistered(String tag) {
-		return REGISTERED_TAGS.containsKey(tag);
-	}
+	private static GUIManager gui;
+	private final static HashMap<String, String> REGISTERED_TAGS = new HashMap<String, String>();	
+	
+	public final static Logger LOGGER = Bukkit.getServer() != null ? Bukkit.getLogger() : Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	public final static HashMap<String, YAMLProcessor> YAML_STORE = new HashMap<String, YAMLProcessor>();
+	public static boolean isTagRegistered(String tag) { return REGISTERED_TAGS.containsKey(tag);}
 	
 	public Leaf() {
 		if (plugin != null)
@@ -100,7 +98,6 @@ public class Leaf extends JavaPlugin {
 			return;
 		}
 		SkriptAddon leaf = Skript.registerAddon(this).setLanguageFileDirectory("lang");
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		if (serverVersion <= 18) {
     		actionbar = new ActionBarOld();
 		} else {
@@ -108,7 +105,7 @@ public class Leaf extends JavaPlugin {
     	}
 		try {
 			rowSetFactory = RowSetProvider.newFactory();
-			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");	
+			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc", "skriptgui");	
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				leaf.loadClasses(getClass().getPackage().getName(), "papi");	
 			}	

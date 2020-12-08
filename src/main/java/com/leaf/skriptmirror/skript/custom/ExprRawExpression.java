@@ -1,15 +1,17 @@
 package com.leaf.skriptmirror.skript.custom;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.classes.Changer;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
-import org.bukkit.event.Event;
-
+import com.leaf.skriptmirror.WrappedEvent;
 import com.leaf.skriptmirror.util.SkriptUtil;
+
+import org.bukkit.event.Event;
 
 public class ExprRawExpression extends SimpleExpression<Expression> {
   static {
@@ -36,6 +38,22 @@ public class ExprRawExpression extends SimpleExpression<Expression> {
   @Override
   public Class<? extends Expression> getReturnType() {
     return Expression.class;
+  }
+
+  @Override
+  public Class<?>[] acceptChange(Changer.ChangeMode changeMode) {
+    return expr instanceof ExprExpression ? new Class[] {Object[].class} : null;
+  }
+
+  @Override
+  public void change(Event event, Object[] delta, Changer.ChangeMode changeMode) {
+    if (!(expr instanceof ExprExpression && event instanceof CustomSyntaxEvent))
+      return;
+
+    Expression<?> expr = ((ExprExpression<?>) this.expr).getExpression(event).getSource();
+
+    event = ((WrappedEvent) event).getEvent();
+    expr.change(event, delta, changeMode);
   }
 
   @Override

@@ -55,6 +55,7 @@ public class CondParseLater extends Condition {
   public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
                       SkriptParser.ParseResult parseResult) {
     if (!Consent.Feature.DEFERRED_PARSING.hasConsent(SkriptUtil.getCurrentScript())) {
+      Skript.error("This feature requires consent, because it is experimental.");
       return false;
     }
 
@@ -85,7 +86,7 @@ public class CondParseLater extends Condition {
       scriptLoaderState.applyToCurrentState();
       parsedStatement = Condition.parse(statement,
           String.format("Could not parse condition at runtime: %s", statement));
-      
+
       if (parsedStatement == null) {
         return null;
       }

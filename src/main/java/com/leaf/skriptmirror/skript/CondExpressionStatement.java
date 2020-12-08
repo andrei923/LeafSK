@@ -1,5 +1,6 @@
 package com.leaf.skriptmirror.skript;
 
+import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.lang.Condition;
@@ -12,6 +13,7 @@ import ch.njol.util.Kleenean;
 import com.leaf.Leaf;
 import com.leaf.skriptmirror.ObjectWrapper;
 import com.leaf.skriptmirror.skript.reflect.ExprJavaCall;
+import com.leaf.skriptmirror.util.SkriptReflection;
 import com.leaf.skriptmirror.util.SkriptUtil;
 
 import org.bukkit.Bukkit;
@@ -48,12 +50,17 @@ public class CondExpressionStatement extends Condition {
   @Override
   protected TriggerItem walk(Event e) {
     if (isAsynchronous) {
-      CompletableFuture.runAsync(() -> check(e), threadPool)
-          .thenAccept(res -> Bukkit.getScheduler().runTask(Leaf.getInstance(), () -> {
-            if (getNext() != null) {
-              TriggerItem.walk(getNext(), e);
-            }
-          }));
+      Object localVariables = SkriptReflection.getLocals(e);
+      CompletableFuture.runAsync(() -> {
+        SkriptReflection.putLocals(localVariables, e);
+        check(e);
+      }, threadPool)
+        .thenAccept(res -> Bukkit.getScheduler().runTask(Leaf.getInstance(), () -> {
+          if (getNext() != null)
+            TriggerItem.walk(getNext(), e);
+
+          SkriptReflection.removeLocals(e);
+        }));
       return null;
     }
     return super.walk(e);
@@ -81,6 +88,8 @@ public class CondExpressionStatement extends Condition {
       Skript.error("Asynchronous java calls may not be used as conditions.");
       return false;
     }
+    if (isAsynchronous)
+      ScriptLoader.hasDelayBefore = Kleenean.TRUE;
 
     return SkriptUtil.canInitSafely(arg);
   }

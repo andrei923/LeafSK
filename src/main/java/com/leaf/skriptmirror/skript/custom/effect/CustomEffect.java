@@ -12,12 +12,14 @@ import com.leaf.skriptmirror.util.SkriptUtil;
 import org.bukkit.event.Event;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class CustomEffect extends Effect {
   private EffectSyntaxInfo which;
   private Expression<?>[] exprs;
   private SkriptParser.ParseResult parseResult;
-  private Event parseEvent;
+  private Object variablesMap;
 
   @Override
   protected void execute(Event e) {
@@ -33,6 +35,14 @@ public class CustomEffect extends Effect {
       return getNext();
     }
 
+    Object localVars = SkriptReflection.getLocals(effectEvent.getDirectEvent());
+    new Thread(() -> {
+      try {
+        Thread.sleep(1);
+        if (!effectEvent.hasContinued())
+          SkriptReflection.putLocals(localVars, effectEvent.getDirectEvent());
+      } catch (InterruptedException ignored) { }
+    }).start();
     return null;
   }
 
@@ -43,7 +53,7 @@ public class CustomEffect extends Effect {
     if (trigger == null) {
       Skript.error(String.format("The custom effect '%s' no longer has a handler.", which));
     } else {
-      SkriptReflection.copyVariablesMap(parseEvent, effectEvent);
+      SkriptReflection.putLocals(SkriptReflection.copyLocals(variablesMap), effectEvent);
       trigger.execute(effectEvent);
     }
     return effectEvent;
@@ -72,16 +82,18 @@ public class CustomEffect extends Effect {
       return false;
     }
 
+    List<Supplier<Boolean>> suppliers = CustomEffectSection.usableSuppliers.get(which);
+    if (suppliers != null && suppliers.size() != 0 && suppliers.stream().noneMatch(Supplier::get))
+      return false;
+
     Trigger parseHandler = CustomEffectSection.parserHandlers.get(which);
 
     if (parseHandler != null) {
       SyntaxParseEvent event =
           new SyntaxParseEvent(this.exprs, matchedPattern, parseResult, ScriptLoader.getCurrentEvents());
-      parseHandler.execute(event);
 
-      if (SkriptReflection.hasLocalVariables(event)) {
-        parseEvent = event;
-      }
+      TriggerItem.walk(parseHandler, event);
+      variablesMap = SkriptReflection.removeLocals(event);
 
       return event.isMarkedContinue();
     }

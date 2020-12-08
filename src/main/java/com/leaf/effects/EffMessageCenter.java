@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import com.leaf.util.Registry;
+import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -13,9 +13,9 @@ import ch.njol.util.Kleenean;
 
 public class EffMessageCenter extends Effect {
 	static {
-		Registry.newEffect(EffMessageCenter.class, "(message|send [message]) center[ed] %strings% to %players% [[with[ text]] %-string%]");
+		Skript.registerEffect(EffMessageCenter.class, "(message|send [message]) center[ed] %strings% to %players% [[with[ text]] %-string%]");
 	}
-		
+	
 	private Expression<String> string;
 	private Expression<Player> player;
 	private Expression<String> centersymbol;

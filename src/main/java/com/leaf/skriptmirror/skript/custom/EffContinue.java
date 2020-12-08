@@ -2,22 +2,23 @@ package com.leaf.skriptmirror.skript.custom;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
-import ch.njol.skript.lang.*;
+import ch.njol.skript.lang.Effect;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
 
 import com.leaf.skriptmirror.skript.custom.condition.ConditionCheckEvent;
 import com.leaf.skriptmirror.skript.custom.effect.EffectTriggerEvent;
+import com.leaf.skriptmirror.skript.custom.event.EventTriggerEvent;
 
 import org.bukkit.event.Event;
 
 public class EffContinue extends Effect {
   static {
-    Skript.registerEffect(EffContinue.class, "continue [if (%-boolean%|<.+>)]");
+    Skript.registerEffect(EffContinue.class, "continue");
   }
-
-  private Expression<Boolean> condition;
-  private Condition skriptCondition;
 
   @Override
   protected void execute(Event e) {
@@ -26,23 +27,22 @@ public class EffContinue extends Effect {
 
   @Override
   protected TriggerItem walk(Event e) {
-    if (skriptCondition != null && !skriptCondition.check(e)
-        || condition != null && condition.getSingle(e) != Boolean.TRUE) {
-      return null;
-    }
-
     if (e instanceof EffectTriggerEvent) {
       if (((EffectTriggerEvent) e).isSync()) {
         Skript.warning("Synchronous events should not be continued. " +
             "Call 'delay effect' to delay the effect's execution.");
       } else {
-        TriggerItem.walk(((EffectTriggerEvent) e).getNext(),
-            ((EffectTriggerEvent) e).getDirectEvent());
+        EffectTriggerEvent effectTriggerEvent = (EffectTriggerEvent) e;
+        effectTriggerEvent.setContinued();
+        TriggerItem.walk(effectTriggerEvent.getNext(), effectTriggerEvent.getDirectEvent());
       }
+      // TODO make ContinuableEvent interface / abstract class or sth alike
     } else if (e instanceof ConditionCheckEvent) {
       ((ConditionCheckEvent) e).markContinue();
     } else if (e instanceof SyntaxParseEvent) {
       ((SyntaxParseEvent) e).markContinue();
+    } else if (e instanceof EventTriggerEvent) {
+      ((EventTriggerEvent) e).markContinue();
     }
 
     return null;
@@ -53,22 +53,12 @@ public class EffContinue extends Effect {
     return "continue";
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
                       SkriptParser.ParseResult parseResult) {
-    if (!ScriptLoader.isCurrentEvent(EffectTriggerEvent.class, ConditionCheckEvent.class, SyntaxParseEvent.class)) {
+    if (!ScriptLoader.isCurrentEvent(EffectTriggerEvent.class, ConditionCheckEvent.class, SyntaxParseEvent.class, EventTriggerEvent.class)) {
       Skript.error("Return may only be used in custom effects and conditions.", ErrorQuality.SEMANTIC_ERROR);
       return false;
-    }
-
-    condition = (Expression<Boolean>) exprs[0];
-
-    if (parseResult.regexes.size() > 0) {
-      String group = parseResult.regexes.get(0).group();
-      skriptCondition = Condition.parse(group, "Can't understand this condition: " + group);
-
-      return skriptCondition != null;
     }
 
     return true;

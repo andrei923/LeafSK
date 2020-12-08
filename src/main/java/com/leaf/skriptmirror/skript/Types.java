@@ -9,11 +9,9 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.Converters;
 import ch.njol.yggdrasil.Fields;
 
-import com.leaf.skriptmirror.JavaType;
-import com.leaf.skriptmirror.LibraryLoader;
-import com.leaf.skriptmirror.Null;
-import com.leaf.skriptmirror.ObjectWrapper;
+import com.leaf.skriptmirror.*;
 import com.leaf.skriptmirror.skript.custom.CustomImport;
+import com.leaf.skriptmirror.skript.reflect.sections.Section;
 import com.leaf.skriptmirror.util.SkriptUtil;
 
 import org.bukkit.event.Event;
@@ -221,6 +219,10 @@ public class Types {
             return ".+";
           }
         })
+    );
+
+    Classes.registerClass(new ClassInfo<>(Section.class, "section")
+      .user("sections?")
     );
   }
 }

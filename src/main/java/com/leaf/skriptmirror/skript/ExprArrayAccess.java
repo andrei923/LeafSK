@@ -23,7 +23,7 @@ public class ExprArrayAccess<T> implements Expression<T> {
   static {
     //noinspection unchecked
     Skript.registerExpression(ExprArrayAccess.class, Object.class, ExpressionType.COMBINED,
-        "%javaobject%\\[%number%\\]");
+      "%javaobject%\\[%number%\\]");
   }
 
   private Expression<ObjectWrapper> arrays;
@@ -182,7 +182,8 @@ public class ExprArrayAccess<T> implements Expression<T> {
           array[i.intValue()] = null;
           break;
       }
-    } catch (IndexOutOfBoundsException ignored) {}
+    } catch (IndexOutOfBoundsException ignored) {
+    }
   }
 
   @Override

@@ -4,10 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import javax.annotation.Nullable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-
 import com.leaf.Leaf;
-import com.leaf.util.Registry;
-
+import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -16,7 +14,7 @@ import ch.njol.util.Kleenean;
 public class EffActionBar extends Effect {
 	
 	static {
-		Registry.newEffect(EffActionBar.class, "[leaf] send action[ ]bar %string% to %players%");
+		Skript.registerEffect(EffActionBar.class, "[leaf] send action[ ]bar %string% to %players%");
 	}
 	
 	private Expression<String> message;

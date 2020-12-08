@@ -52,7 +52,7 @@ public class EffExecuteStatement extends Delay {
   static String lastError;
 
   private static final ExecutorService threadPool =
-      Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+      Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
   private Expression<String> query;
   private Expression<HikariDataSource> dataSource;
