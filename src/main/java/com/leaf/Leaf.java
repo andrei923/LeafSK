@@ -89,6 +89,7 @@ public class Leaf extends JavaPlugin {
 		representer = new SkriptYamlRepresenter();
 		constructor = new SkriptYamlConstructor();
 		Boolean hasSkript = plugin.getServer().getPluginManager().isPluginEnabled("Skript");
+		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		if (!hasSkript || !Skript.isAcceptRegistrations()) {
 			if (!hasSkript)
 				log("Error 404 - Skript not found.", Level.SEVERE);
@@ -105,7 +106,7 @@ public class Leaf extends JavaPlugin {
     	}
 		try {
 			rowSetFactory = RowSetProvider.newFactory();
-			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc", "skriptgui");	
+			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");	
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				leaf.loadClasses(getClass().getPackage().getName(), "papi");	
 			}	
