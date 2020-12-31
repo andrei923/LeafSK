@@ -13,7 +13,6 @@ import org.bukkit.ChatColor;
 import ch.njol.skript.SkriptAddon;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import com.leaf.gui.GUIManager;
 import com.leaf.misc.ActionBarAPI;
 import com.leaf.misc.ActionBarNew;
@@ -80,6 +79,8 @@ public class Leaf extends JavaPlugin {
 		}
 	}
 	
+	
+
 	@Override
 	public void onEnable() {
         String[] strings = Bukkit.getBukkitVersion().split("-");
@@ -115,7 +116,7 @@ public class Leaf extends JavaPlugin {
 		    Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
 		    LibraryLoader.loadLibraries(dataFolder);
 		    ParseOrderWorkarounds.reorderSyntax();		    
-			//			    
+			//		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}}
