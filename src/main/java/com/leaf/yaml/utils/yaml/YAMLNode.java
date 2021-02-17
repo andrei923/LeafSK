@@ -122,7 +122,8 @@ public class YAMLNode {
 
 						if (w == null | x == null || y == null || z == null || yaw == null || pitch == null)
 							return null;
-
+						if (Bukkit.getServer().getWorld(w) == null) return null;
+		
 						return new Location(Bukkit.getServer().getWorld(w), x, y, z, (float) yaw.doubleValue(), (float) pitch.doubleValue());
 					} else {
 						return Classes.deserialize(o3.getKey(), Base64.getDecoder().decode((String) o3.getValue()));

@@ -19,9 +19,8 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
+import com.leaf.Leaf;
 import com.leaf.yaml.api.ConstructedClass;
-
-import ch.njol.skript.util.Color;
 import ch.njol.skript.util.Date;
 import ch.njol.skript.util.Time;
 import ch.njol.skript.util.Timespan;
@@ -118,10 +117,15 @@ public class SkriptYamlConstructor extends SafeConstructor {
 			Double z = (Double) values.get("z");
 			Double yaw = (Double) values.get("yaw");
 			Double pitch = (Double) values.get("pitch");
-
-			if (w == null | x == null || y == null || z == null || yaw == null || pitch == null)
+			
+			if (x == null || y == null || z == null || yaw == null || pitch == null) {
 				return null;
-
+			}
+			if (Bukkit.getServer().getWorld(w) == null) {
+				Leaf.warn("The world " + w + "is not loaded, changing it to the default world.");
+				w = Bukkit.getServer().getWorlds().get(0).getName();
+			}			
+			
 			return new Location(Bukkit.getServer().getWorld(w), x, y, z, (float) yaw.doubleValue(),
 					(float) pitch.doubleValue());
 		}

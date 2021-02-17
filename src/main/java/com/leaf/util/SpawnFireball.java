@@ -4,16 +4,11 @@ package com.leaf.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Fireball;
 import org.bukkit.util.Vector;
 
-public class MinigamesUtils {
+public class SpawnFireball {
 	
     private static Field fieldFireballDirX;
     private static Field fieldFireballDirY;
@@ -21,17 +16,6 @@ public class MinigamesUtils {
 
     private static Method craftFireballHandle;
     
-	//BedWars bed.
-	public static void setBed(Block start, BlockFace facing, Material material) {
-	    for (Bed.Part part : Bed.Part.values()) {
-	        start.setBlockData(Bukkit.createBlockData(material, (data) -> {
-	           ((Bed) data).setPart(part);
-	           ((Bed) data).setFacing(facing);
-	        }));
-	        start = start.getRelative(facing.getOppositeFace());
-	    }
-	}	
-
 	//BedWars Fireball.
     static {
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";

@@ -110,13 +110,13 @@ public class Leaf extends JavaPlugin {
 			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");	
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				leaf.loadClasses(getClass().getPackage().getName(), "papi");	
-			}	
+			}					
 			//SkriptMirror.
 			leaf.loadClasses("com.leaf.skriptmirror");	
 		    Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
 		    LibraryLoader.loadLibraries(dataFolder);
 		    ParseOrderWorkarounds.reorderSyntax();		    
-			//		
+			//
 		} catch (Exception e) {
 			e.printStackTrace();
 		}}

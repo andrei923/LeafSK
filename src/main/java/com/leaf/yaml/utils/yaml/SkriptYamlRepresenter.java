@@ -24,7 +24,7 @@ import com.leaf.yaml.api.RepresentedClass;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.util.Color;
 import ch.njol.skript.util.Date;
-import ch.njol.skript.util.Slot;
+import ch.njol.skript.util.slot.Slot;
 import ch.njol.skript.util.Time;
 import ch.njol.skript.util.Timespan;
 import ch.njol.skript.util.WeatherType;
