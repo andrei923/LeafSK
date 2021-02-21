@@ -27,29 +27,33 @@ import com.leaf.yaml.utils.yaml.SkriptYamlRepresenter;
 import com.leaf.yaml.utils.yaml.YAMLProcessor;
 
 public class Leaf extends JavaPlugin {
-	public static Leaf plugin;	
-	private ActionBarAPI actionbar;	
-	private int serverVersion;			
+	public static Leaf plugin;
+	private ActionBarAPI actionbar;
+	private int serverVersion;
 	private static RowSetFactory rowSetFactory;
 	private static SkriptYamlRepresenter representer;
 	private static SkriptYamlConstructor constructor;
 	private static GUIManager gui;
-	private final static HashMap<String, String> REGISTERED_TAGS = new HashMap<String, String>();	
-	
+	private final static HashMap < String,
+	String > REGISTERED_TAGS = new HashMap < String,
+	String > ();
+
 	public final static Logger LOGGER = Bukkit.getServer() != null ? Bukkit.getLogger() : Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	public final static HashMap<String, YAMLProcessor> YAML_STORE = new HashMap<String, YAMLProcessor>();
-	public static boolean isTagRegistered(String tag) { return REGISTERED_TAGS.containsKey(tag);}
-	
-	public Leaf() {
-		if (plugin != null)
-			throw new IllegalStateException("LeafSK can't have two instances.");
-		plugin = this;	
+	public final static HashMap < String,
+	YAMLProcessor > YAML_STORE = new HashMap < String,
+	YAMLProcessor > ();
+	public static boolean isTagRegistered(String tag) {
+		return REGISTERED_TAGS.containsKey(tag);
 	}
 
-	public static void registerTag(JavaPlugin plugin, String tag, Class<?> c, RepresentedClass<?> rc, ConstructedClass<?> cc) {
+	public Leaf() {
+		if (plugin != null) throw new IllegalStateException("LeafSK can't have two instances.");
+		plugin = this;
+	}
+
+	public static void registerTag(JavaPlugin plugin, String tag, Class < ?>c, RepresentedClass < ?>rc, ConstructedClass < ?>cc) {
 		String prefix = plugin.getName().toLowerCase() + "-";
-		if (!tag.startsWith(prefix))
-			tag = prefix + tag;
+		if (!tag.startsWith(prefix)) tag = prefix + tag;
 		if (!REGISTERED_TAGS.containsKey(tag)) {
 			if (!representer.contains(c)) {
 				if (SkriptYamlUtils.getType(rc.getClass()) == c) {
@@ -58,92 +62,82 @@ public class Leaf extends JavaPlugin {
 						representer.register(tag, c, rc);
 						constructor.register(tag, cc);
 					} else {
-						warn("The class '" + c.getSimpleName() + "' that the plugin '" + plugin.getName()
-								+ "' is trying to register does not match constructed class '"
-								+ SkriptYamlUtils.getType(cc.getClass()).getSimpleName() + "' for constructor '"
-								+ cc.getClass().getSimpleName() + "' the tag '" + tag + "' was not registered");
+						warn("The class '" + c.getSimpleName() + "' that the plugin '" + plugin.getName() + "' is trying to register does not match constructed class '" + SkriptYamlUtils.getType(cc.getClass()).getSimpleName() + "' for constructor '" + cc.getClass().getSimpleName() + "' the tag '" + tag + "' was not registered");
 					}
 				} else {
-					warn("The class '" + c.getSimpleName() + "' that the plugin '" + plugin.getName()
-							+ "' is trying to register does not match represented class '"
-							+ SkriptYamlUtils.getType(rc.getClass()).getSimpleName() + "' for representer '"
-							+ rc.getClass().getSimpleName() + "' the tag '" + tag + "' was not registered");
+					warn("The class '" + c.getSimpleName() + "' that the plugin '" + plugin.getName() + "' is trying to register does not match represented class '" + SkriptYamlUtils.getType(rc.getClass()).getSimpleName() + "' for representer '" + rc.getClass().getSimpleName() + "' the tag '" + tag + "' was not registered");
 				}
 			} else {
-				warn("The class '" + c.getSimpleName() + "' that the plugin '" + plugin.getName()
-						+ "' is trying to register for the tag '" + tag + "' is already registered");
+				warn("The class '" + c.getSimpleName() + "' that the plugin '" + plugin.getName() + "' is trying to register for the tag '" + tag + "' is already registered");
 			}
 		} else {
-			warn("The plugin '" + plugin.getName() + "' is trying to register the tag '" + tag
-					+ "' but it's already registered to '" + REGISTERED_TAGS.get(tag) + "'");
+			warn("The plugin '" + plugin.getName() + "' is trying to register the tag '" + tag + "' but it's already registered to '" + REGISTERED_TAGS.get(tag) + "'");
 		}
 	}
-	
-	
 
 	@Override
 	public void onEnable() {
-        String[] strings = Bukkit.getBukkitVersion().split("-");
-        String[] version = strings[0].split("\\.");
-        serverVersion = Integer.parseInt(version[1]);
-        
+		String[] strings = Bukkit.getBukkitVersion().split("-");
+		String[] version = strings[0].split("\\.");
+		serverVersion = Integer.parseInt(version[1]);
+
 		representer = new SkriptYamlRepresenter();
 		constructor = new SkriptYamlConstructor();
 		Boolean hasSkript = plugin.getServer().getPluginManager().isPluginEnabled("Skript");
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		if (!hasSkript || !Skript.isAcceptRegistrations()) {
-			if (!hasSkript)
-				log("Error 404 - Skript not found.", Level.SEVERE);
-			else
-				log("LeafSK can't be loaded when the server is already loaded.", Level.SEVERE);
+			if (!hasSkript) log("Error 404 - Skript not found.", Level.SEVERE);
+			else log("LeafSK can't be loaded when the server is already loaded.", Level.SEVERE);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 		SkriptAddon leaf = Skript.registerAddon(this).setLanguageFileDirectory("lang");
 		if (serverVersion <= 18) {
-    		actionbar = new ActionBarOld();
+			actionbar = new ActionBarOld();
 		} else {
-    		actionbar = new ActionBarNew();
-    	}
+			actionbar = new ActionBarNew();
+		}
 		try {
 			rowSetFactory = RowSetProvider.newFactory();
-			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");	
+			leaf.loadClasses(getClass().getPackage().getName(), "db", "effects", "expressions", "yaml", "skript", "conditions", "events", "misc");
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-				leaf.loadClasses(getClass().getPackage().getName(), "papi");	
-			}					
+				leaf.loadClasses(getClass().getPackage().getName(), "papi");
+			}
 			//SkriptMirror.
-			leaf.loadClasses("com.leaf.skriptmirror");	
-		    Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
-		    LibraryLoader.loadLibraries(dataFolder);
-		    ParseOrderWorkarounds.reorderSyntax();		    
+			leaf.loadClasses("com.leaf.skriptmirror");
+			Path dataFolder = Leaf.getInstance().getDataFolder().toPath();
+			LibraryLoader.loadLibraries(dataFolder);
+			ParseOrderWorkarounds.reorderSyntax();
 			//
-		} catch (Exception e) {
+			Class.forName("org.sqlite.JDBC");
+		} catch(Exception e) {
 			e.printStackTrace();
-		}}
+		}
+	}
 
 	@Override
 	public void onDisable() {
 		HandlerList.unregisterAll(this);
 		Bukkit.getScheduler().cancelTasks(this);
 	}
-	public static Leaf getInstance(){
+	public static Leaf getInstance() {
 		return plugin;
 	}
-    public ActionBarAPI getActionbar() {
-        return actionbar;
-    }
-	public static void log(String msg){
-	    log(msg, Level.INFO);
+	public ActionBarAPI getActionbar() {
+		return actionbar;
 	}
-	public static void log(String msg, Level lvl){
-	    plugin.getLogger().log(lvl, msg);
+	public static void log(String msg) {
+		log(msg, Level.INFO);
+	}
+	public static void log(String msg, Level lvl) {
+		plugin.getLogger().log(lvl, msg);
 	}
 	public static RowSetFactory getRowSetFactory() {
-	    return rowSetFactory;
+		return rowSetFactory;
 	}
 	public static String cc(String text) {
 		return ChatColor.translateAlternateColorCodes('&', text);
-	}	
+	}
 	public SkriptYamlRepresenter getRepresenter() {
 		return representer;
 	}
@@ -158,11 +152,10 @@ public class Leaf extends JavaPlugin {
 	}
 	public static void error(String error) {
 		LOGGER.severe("[LeafSK] " + error);
-	}	
-	public static GUIManager getGUIManager(){
-		if (gui == null)
-			 gui = new GUIManager(getInstance());
-	    return gui;
-	}	
-	  
+	}
+	public static GUIManager getGUIManager() {
+		if (gui == null) gui = new GUIManager(getInstance());
+		return gui;
+	}
+
 }

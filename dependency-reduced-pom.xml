@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>LeafSK</groupId>
   <artifactId>LeafSK</artifactId>
-  <version>2.3.5-SNAPSHOT</version>
+  <version>2.3.8-SNAPSHOT</version>
   <build>
     <resources>
       <resource>
@@ -42,6 +42,10 @@
             <relocation>
               <pattern>net.jitse.npclib</pattern>
               <shadedPattern>com.leaf.npclib</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>net.wesjd.anvilgui</pattern>
+              <shadedPattern>com.leaf.anvilgui</shadedPattern>
             </relocation>
           </relocations>
         </configuration>

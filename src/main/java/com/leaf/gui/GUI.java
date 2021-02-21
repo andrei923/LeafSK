@@ -71,10 +71,5 @@ public class GUI {
 	public boolean toRun(){
 		return run != null;
 	}
-	public boolean runOnlyWith(ItemStack item){
-		return (this.item != null) ? (item != null) ? this.item.getType().equals(item.getType()) && this.item.getData().equals(item.getData()) : false : true;
-	}
 	
-	
-
 }

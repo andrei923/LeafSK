@@ -18,19 +18,21 @@ import net.wesjd.anvilgui.AnvilGUI;
 public class EffAnvilGUI extends Effect {
 	
 	static {
-		Skript.registerEffect(EffAnvilGUI.class, "[leaf] open anvil gui with %itemstack% and name %string% to %player%");
+		Skript.registerEffect(EffAnvilGUI.class, "[leaf] open anvil gui with %itemstack% and %itemstack% named %string% to %player%");
 	}
 		
 	private Expression<Player> player;
 	private Expression<String> search;	
-	private Expression<ItemStack> item;
+	private Expression<ItemStack> itemLeft;
+	private Expression<ItemStack> itemRight;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		item = (Expression<ItemStack>) arg0[0];
-		search = (Expression<String>) arg0[1];		
-		player = (Expression<Player>) arg0[2];
+		itemLeft = (Expression<ItemStack>) arg0[0];
+		itemRight = (Expression<ItemStack>) arg0[1];		
+		search = (Expression<String>) arg0[2];		
+		player = (Expression<Player>) arg0[3];
 		return true;
 	}
 
@@ -42,23 +44,23 @@ public class EffAnvilGUI extends Effect {
 	@Override
 	protected void execute(Event arg0) {
 		Player p = player.getSingle(arg0);
-		ItemStack i = item.getSingle(arg0);
-		String s = search.getSingle(arg0);
+		ItemStack itmLeft = itemLeft.getSingle(arg0);
+		ItemStack itmRight = itemRight.getSingle(arg0);
+		String name = search.getSingle(arg0);
 		new AnvilGUI.Builder()
 	    .onClose(player -> {                      //called when the inventory is closing
 	        AnvilGUICloseEvent AnvilGUICloseEvent = new AnvilGUICloseEvent(p);	        
 	        Bukkit.getServer().getPluginManager().callEvent(AnvilGUICloseEvent);
 	    })
-	    .onComplete((player, text) -> {           //called when the inventory output slot is clicked	          
-	    	AnvilGUICompleteEvent AnvilGUICompleteEvent = new AnvilGUICompleteEvent(p, text);	        
+	    .onComplete((player, output) -> {           //called when the inventory output slot is clicked	          
+	    	AnvilGUICompleteEvent AnvilGUICompleteEvent = new AnvilGUICompleteEvent(p, output);	        
 	    	Bukkit.getServer().getPluginManager().callEvent(AnvilGUICompleteEvent);
 	     return AnvilGUI.Response.close();
 	    })
-	//    .preventClose()                           //prevents the inventory from being closed
-	    .text(s)     //sets the text the GUI should start with
-	    .item(i) //use a custom item for the first slot
-	    //.title("Enter your answer.")              //set the title of the GUI (only works in 1.14+)
-	    .plugin(Leaf.getInstance())                 //set the plugin instance
-	    .open(p);                          //opens the GUI for the player provided;
+	    .text(name) 
+	    .itemLeft(itmLeft)
+	    .itemRight(itmRight)	    
+	    .plugin(Leaf.getInstance())  
+	    .open(p);                         
 		}
     }

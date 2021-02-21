@@ -130,7 +130,7 @@ public class GUIManager {
 				if (isGUI(inv, slot)){
 					e.setCancelled(true);
 					final GUI gui = getGUI(inv, e.getSlot(), e.getClick());
-					if (gui != null && e.getInventory().getItem(e.getSlot()) != null && gui.runOnlyWith(e.getCursor())){
+					if (gui != null && e.getInventory().getItem(e.getSlot()) != null){
 						if(gui.toClose())
 							Bukkit.getScheduler().scheduleSyncDelayedTask(tuske, () -> {
 								if (gui.getInventory() != null)
